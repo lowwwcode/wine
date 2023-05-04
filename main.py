@@ -26,22 +26,24 @@ def right_ending_of_year(_year):
         return 'года'
 
 
-collection = pandas.read_excel('wine2.xlsx', keep_default_na=False).to_dict(orient='records')
-
-products_by_categories = collections.defaultdict(list)
-
-for product in collection:
-    products_by_categories[product["Категория"]].append(product)
-
-pprint(products_by_categories)
-
-template = env.get_template('templates/index_template.html')
 age_of_company = datetime.now() - relativedelta(years=1920)
 
+products_raw = pandas.read_excel('wine2.xlsx', keep_default_na=False).to_dict(orient='records')
+products_by_categories = collections.defaultdict(list)
+for product in products_raw:
+    products_by_categories[product["Категория"]].append(product)
 
+prices = []
+for product in products_raw:
+    prices.append(product['Цена'])
+min_price = min(prices)
+
+
+template = env.get_template('templates/index_template.html')
 rendered_output = template.render(age=age_of_company.year,
                                   year=right_ending_of_year(age_of_company.year),
-                                  products_by_categories=products_by_categories)
+                                  products_by_categories=products_by_categories,
+                                  min_price=min_price)
 
 with open('index.html', 'w', encoding="utf8") as file:
     file.write(rendered_output)
