@@ -1,4 +1,3 @@
-import json
 from datetime import datetime
 from pprint import pprint
 
@@ -6,7 +5,7 @@ from dateutil.relativedelta import relativedelta
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import pandas
-
+import collections
 env = Environment(
     loader=FileSystemLoader('.'),
     autoescape=select_autoescape(['html', 'xml'])
@@ -27,20 +26,21 @@ def right_ending_of_year(_year):
         return 'года'
 
 
-df_from_excel = pandas.read_excel('wine.xlsx',
-                                  na_values='',
-                                  keep_default_na=False,
-                                  names=['title', 'grade', 'price', 'image'])
-parsed_wines = df_from_excel.to_json(orient='records', force_ascii=False)
-json_wines = json.loads(parsed_wines)
+collection = pandas.read_excel('wine2.xlsx', keep_default_na=False).to_dict(orient='records')
+
+products_by_categories = collections.defaultdict(list)
+
+for product in collection:
+    products_by_categories[product["Категория"]].append(product)
+
+pprint(products_by_categories)
 
 template = env.get_template('templates/index_template.html')
 age_of_company = datetime.now() - relativedelta(years=1920)
 
 
 rendered_output = template.render(age=age_of_company.year,
-                                  year=right_ending_of_year(age_of_company.year),
-                                  json_wines=json_wines)
+                                  year=right_ending_of_year(age_of_company.year))
 
 with open('index.html', 'w', encoding="utf8") as file:
     file.write(rendered_output)
