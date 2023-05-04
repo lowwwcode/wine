@@ -40,7 +40,8 @@ age_of_company = datetime.now() - relativedelta(years=1920)
 
 
 rendered_output = template.render(age=age_of_company.year,
-                                  year=right_ending_of_year(age_of_company.year))
+                                  year=right_ending_of_year(age_of_company.year),
+                                  products_by_categories=products_by_categories)
 
 with open('index.html', 'w', encoding="utf8") as file:
     file.write(rendered_output)

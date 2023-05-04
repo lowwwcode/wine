@@ -114,19 +114,24 @@
           </div>
         </div>
         <div class="row">
-          {% for wine in json_wines %}
-            <div class="col-lg-4 mb-5 col-md-6">
-              <div class="wine_v_1 text-center pb-4 pt-5">
-                <img src="images/{{wine.image}}" alt="Image" class="img-fluid">
-                <div>
-                  <h3 class="heading mt-3 mb-3 text-dark">{{wine.title}}</h3>
-                  <p>
-                    Сорт винограда - {{wine.grade}}<br/>
-                    <span class="price">{{wine.price}} p.</span>
-                  </p>
+          {% for category in products_by_categories %}
+            <div class="col-12 section-title text-center mb-5">
+              <h2 class="d-block">{{category}}</h2>
+            </div>
+            {% for wine in products_by_categories[category] %}
+              <div class="col-lg-4 mb-5 col-md-6">
+                <div class="wine_v_1 text-center pb-4 pt-5">
+                  <img src="images/{{wine['Картинка']}}" alt="Image" class="img-fluid">
+                  <div>
+                    <h3 class="heading mt-3 mb-3 text-dark">{{wine['Название']}}</h3>
+                    <p>
+                      Сорт винограда - {{wine['Сорт']}}<br/>
+                      <span class="price">{{wine['Цена']}} p.</span>
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            {% endfor %}
           {% endfor %}
         </div>
       </div>
