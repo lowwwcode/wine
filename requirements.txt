@@ -1,0 +1,10 @@
+jinja2==3.1.2
+openpyxl==3.1.2
+pandas==2.0.1
+# et-xmlfile==1.1.0 # Installed as dependency for openpyxl
+# markupsafe==2.1.2 # Installed as dependency for jinja2
+# numpy==1.24.3 # Installed as dependency for pandas
+# python-dateutil==2.8.2 # Installed as dependency for pandas
+# pytz==2023.3 # Installed as dependency for pandas
+# six==1.16.0 # Installed as dependency for python-dateutil
+# tzdata==2023.3 # Installed as dependency for pandas

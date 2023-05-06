@@ -13,22 +13,22 @@ env = Environment(
 
 
 def right_ending_of_year(_year):
-    reminder = _year % 10
-    if _year == 0 or reminder == 0 or reminder >= 5 or _year in range(11, 19):
+    last_digit = _year % 10
+    last_two_digits = _year % 100
+    if last_two_digits in (11, 12, 13, 14):
         return 'лет'
-    elif reminder == 1:
+    if last_digit == 1:
         return 'год'
-    elif ((_year % 100) >= 10) and ((_year % 100) < 20):
-        return 'лет'
-    elif _year % 10 > 4:
-        return 'лет'
-    else:
+    elif last_digit in (2, 3, 4):
         return 'года'
+    else:
+        return 'лет'
 
 
 age_of_company = datetime.now() - relativedelta(years=1920)
 
 products_raw = pandas.read_excel('wine2.xlsx', keep_default_na=False).to_dict(orient='records')
+print(products_raw)
 products_by_categories = collections.defaultdict(list)
 for product in products_raw:
     products_by_categories[product["Категория"]].append(product)
