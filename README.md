@@ -18,7 +18,10 @@ source env/bin/activate
 pip install -r requirements.txt
 ```
 
-Запустите сайт командой `python3 main.py`
+Запустите сайт командой 
+```shell
+python3 main.py
+```
 Перейдите на сайт по адресу [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
 ## Цели проекта
