@@ -1,14 +1,22 @@
-from datetime import datetime
-from pprint import pprint
-
-from dateutil.relativedelta import relativedelta
-from http.server import HTTPServer, SimpleHTTPRequestHandler
-from jinja2 import Environment, FileSystemLoader, select_autoescape
-import pandas
+import argparse
 import collections
+import os
+from datetime import datetime
+from http.server import HTTPServer, SimpleHTTPRequestHandler
+
+import pandas
+from dateutil.relativedelta import relativedelta
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 
-def right_ending_of_year(_year):
+def is_dir_path(string):
+    if os.path.isdir(string):
+        return string
+    else:
+        raise NotADirectoryError(string)
+
+
+def get_right_ending_of_year(_year):
     last_digit = _year % 10
     last_two_digits = _year % 100
     if last_two_digits in (11, 12, 13, 14):
@@ -22,6 +30,15 @@ def right_ending_of_year(_year):
 
 
 def main():
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-path', dest='path', default='wine.xlsx')
+    parser.add_argument('-ip', dest='ip_address', default='0.0.0.0')
+    parser.add_argument('-port', dest='port', default=8000)
+    args = parser.parse_args()
+
+    path_to_excel_file = os.path.normpath(args.path)
+
     env = Environment(
         loader=FileSystemLoader('.'),
         autoescape=select_autoescape(['html', 'xml'])
@@ -29,27 +46,25 @@ def main():
 
     age_of_company = datetime.now() - relativedelta(years=1920)
 
-    products_raw = pandas.read_excel('wine2.xlsx', keep_default_na=False).to_dict(orient='records')
-    print(products_raw)
+    parsed_products_from_excel = pandas.read_excel(path_to_excel_file, keep_default_na=False).to_dict(orient='records')
+
     products_by_categories = collections.defaultdict(list)
-    for product in products_raw:
+
+    for product in parsed_products_from_excel:
         products_by_categories[product["Категория"]].append(product)
 
-    prices = []
-    for product in products_raw:
-        prices.append(product['Цена'])
-    min_price = min(prices)
+    min_price = min([product['Цена'] for product in parsed_products_from_excel])
 
     template = env.get_template('templates/index_template.html')
     rendered_output = template.render(age=age_of_company.year,
-                                      year=right_ending_of_year(age_of_company.year),
+                                      year=get_right_ending_of_year(age_of_company.year),
                                       products_by_categories=products_by_categories,
                                       min_price=min_price)
 
     with open('index.html', 'w', encoding="utf8") as file:
         file.write(rendered_output)
 
-    server = HTTPServer(('0.0.0.0', 8000), SimpleHTTPRequestHandler)
+    server = HTTPServer((args.ip_address, int(args.port)), SimpleHTTPRequestHandler)
     server.serve_forever()
 
 
